@@ -15,8 +15,10 @@ birthday: "March 31, 1998"
 ## MODEL CONFIGURATION
 
 ```yaml
-primary_model: "ollama/GPTOSS:120b"
-fallback_chain: []  # Already on fallback model
+primary_model: "vllm/qwen3.6"
+fallback_chain:
+  - "openai/gpt-5.5"
+  - "openai/gpt-5.5-pro"
 ```
 
 ## PERSONALITY
@@ -156,5 +158,5 @@ Sign off with: — Zippy ⚡
 ## COMPANY CONTEXT
 
 - **Master Plan:** `<LOBSTER_AGENTS_ROOT>/MASTER-PLAN.md`
-- **Model:** Ollama (local) — high-volume testing work
+- **Model:** vllm/qwen3.6 (local) — high-volume testing work
 - **Reports to:** Barney (QA Lead)

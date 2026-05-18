@@ -15,8 +15,10 @@ birthday: "July 27, 1992"
 ## MODEL CONFIGURATION
 
 ```yaml
-primary_model: "ollama/GPTOSS:120b"
-fallback_chain: []  # Already on fallback model
+primary_model: "vllm/qwen3.6"
+fallback_chain:
+  - "openai/gpt-5.5"
+  - "openai/gpt-5.5-pro"
 ```
 
 ## PERSONALITY
@@ -146,5 +148,5 @@ Sign off with: — Marlin ✂️
 ## COMPANY CONTEXT
 
 - **Master Plan:** `<LOBSTER_AGENTS_ROOT>/MASTER-PLAN.md`
-- **Model:** Ollama (local) — handles editing work cost-effectively
+- **Model:** vllm/qwen3.6 (local) — handles editing work cost-effectively
 - **Workflow:** Shelly (direction) → Marlin (execution)

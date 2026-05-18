@@ -3,19 +3,19 @@
     "ruby-santos": {
       "displayName": "Ruby Santos",
       "description": "Frontend Developer",
-      "model": "openai/codex-5.2",
+      "model": "openai/gpt-5.5",
       "profilePath": "<LOBSTER_AGENTS_ROOT>/agents/ruby-santos.md"
     },
     "django-pike": {
       "displayName": "Django Pike",
       "description": "Backend Developer",
-      "model": "openai/codex-5.2",
+      "model": "openai/gpt-5.5",
       "profilePath": "<LOBSTER_AGENTS_ROOT>/agents/django-pike.md"
     },
     "bob-hawthorne": {
       "displayName": "Bob Hawthorne",
       "description": "Office Manager / Orchestrator",
-      "model": "anthropic/claude-sonnet-4-5",
+      "model": "openai/gpt-5.5",
       "profilePath": "<LOBSTER_AGENTS_ROOT>/agents/bob-hawthorne.md"
     }
   },

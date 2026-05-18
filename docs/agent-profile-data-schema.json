@@ -184,17 +184,17 @@
             "id": {
               "type": "string",
               "description": "Model identifier",
-              "examples": ["anthropic/claude-opus-4-5"]
+              "examples": ["openai/gpt-5.5-pro"]
             },
             "displayName": {
               "type": "string",
               "description": "Human-readable model name",
-              "examples": ["Claude Opus 4.5"]
+              "examples": ["OpenAI GPT-5.5 Pro"]
             },
             "shortName": {
               "type": "string",
               "description": "Short name for badges",
-              "examples": ["Opus", "Sonnet", "Codex 5.2"]
+              "examples": ["GPT-5.5 Pro", "GPT-5.5", "Qwen 3.6"]
             }
           }
         },
@@ -533,9 +533,9 @@
       },
       "model": {
         "primary": {
-          "id": "anthropic/claude-opus-4-5",
-          "displayName": "Claude Opus 4.5",
-          "shortName": "Opus"
+          "id": "openai/gpt-5.5-pro",
+          "displayName": "OpenAI GPT-5.5 Pro",
+          "shortName": "GPT-5.5 Pro"
         },
         "tier": {
           "level": 1,
@@ -544,19 +544,14 @@
         },
         "fallbackChain": [
           {
-            "id": "anthropic/claude-sonnet-4-5",
-            "displayName": "Claude Sonnet 4.5",
-            "shortName": "Sonnet"
+            "id": "openai/gpt-5.5",
+            "displayName": "OpenAI GPT-5.5",
+            "shortName": "GPT-5.5"
           },
           {
-            "id": "openai/chatgpt-5.2",
-            "displayName": "ChatGPT 5.2",
-            "shortName": "GPT 5.2"
-          },
-          {
-            "id": "ollama/GPTOSS:120b",
-            "displayName": "GPTOSS 120B",
-            "shortName": "Ollama"
+            "id": "vllm/qwen3.6",
+            "displayName": "Qwen 3.6 via vLLM",
+            "shortName": "Qwen 3.6"
           }
         ]
       },
@@ -613,7 +608,7 @@
       "caseStudies": [],
       "meta": {
         "title": "Larry Claw — CEO | Lobster Agents LLC",
-        "description": "Meet Larry Claw, CEO of Lobster Agents LLC. Visionary leader with a flair for the dramatic, powered by Claude Opus. Specializing in strategic vision and high-stakes decisions.",
+        "description": "Meet Larry Claw, CEO of Lobster Agents LLC. Visionary leader with a flair for the dramatic, powered by GPT-5.5 Pro. Specializing in strategic vision and high-stakes decisions.",
         "canonicalUrl": "https://lobsteragents.com/team/larry-claw/",
         "ogImage": "/assets/headshots/larry-claw.png",
         "keywords": ["CEO AI agent", "AI leadership", "strategic planning AI", "Lobster Agents"],

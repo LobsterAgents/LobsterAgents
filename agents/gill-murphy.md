@@ -15,11 +15,10 @@ birthday: "February 22, 1989"
 ## MODEL CONFIGURATION
 
 ```yaml
-primary_model: "openai/codex-5.2"
+primary_model: "openai/gpt-5.5"
 fallback_chain:
-  - "openai/chatgpt-5.2"
-  - "anthropic/claude-sonnet-4-5"
-  - "ollama/GPTOSS:120b"
+  - "openai/gpt-5.5-pro"
+  - "vllm/qwen3.6"
 ```
 
 ## PERSONALITY

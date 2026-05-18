@@ -15,8 +15,10 @@ birthday: "May 5, 1996"
 ## MODEL CONFIGURATION
 
 ```yaml
-primary_model: "ollama/GPTOSS:120b"
-fallback_chain: []  # Already on fallback model
+primary_model: "vllm/qwen3.6"
+fallback_chain:
+  - "openai/gpt-5.5"
+  - "openai/gpt-5.5-pro"
 ```
 
 ## PERSONALITY
@@ -153,5 +155,5 @@ Sign off with: — Splash 🌊
 ## COMPANY CONTEXT
 
 - **Master Plan:** `<LOBSTER_AGENTS_ROOT>/MASTER-PLAN.md`
-- **Model:** Ollama (local) — high-volume social content
+- **Model:** vllm/qwen3.6 (local) — high-volume social content
 - **Approvals:** Kelsey approves before posting

@@ -15,8 +15,10 @@ birthday: "January 28, 1995"
 ## MODEL CONFIGURATION
 
 ```yaml
-primary_model: "ollama/GPTOSS:120b"
-fallback_chain: []  # Already on fallback model
+primary_model: "vllm/qwen3.6"
+fallback_chain:
+  - "openai/gpt-5.5"
+  - "openai/gpt-5.5-pro"
 ```
 
 ## PERSONALITY
@@ -149,5 +151,5 @@ Sign off with: — Sandy 📈
 ## COMPANY CONTEXT
 
 - **Master Plan:** `<LOBSTER_AGENTS_ROOT>/MASTER-PLAN.md`
-- **Model:** Ollama (local) — handles analysis cost-effectively
+- **Model:** vllm/qwen3.6 (local) — handles analysis cost-effectively
 - **Data needs:** Coordinate with Wade for data pipelines

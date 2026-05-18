@@ -65,7 +65,7 @@ The recommended section sequence balances user needs (quick assessment → deep 
 | Role | "Chief Executive Officer" | Full title |
 | Department | "Executive Suite" | Clickable link to dept page |
 | Tier badge | "Tier 1 — Strategic" | Visual indicator |
-| Model | "Opus" | Primary AI model |
+| Model | "openai/gpt-5.5-pro" | Primary AI model |
 | One-liner | "Visionary leader with a flair for the dramatic" | Personality hook |
 
 **Visual Considerations:**
@@ -137,9 +137,9 @@ ALSO SKILLED IN
 **Required Fields:**
 | Field | Type | Example |
 |-------|------|---------|
-| Primary model | String | "Claude Opus 4.5" |
-| Model tier | String | "Tier 1 — Planning" |
-| Fallback chain | List | ["Sonnet", "GPT 5.2", "Ollama"] |
+| Primary model | String | "OpenAI GPT-5.5 Pro" |
+| Model tier | String | "Strategic / high-judgment" |
+| Fallback chain | List | ["openai/gpt-5.5", "vllm/qwen3.6"] |
 | Permission level | String | "Full" |
 | Tools access | List | ["All tools", "Production deploy", "Secrets access"] |
 | Special permissions | List | ["Final decision authority", "Spawn any agent"] |
@@ -150,7 +150,7 @@ ALSO SKILLED IN
 - Permissions as checklist or badge grid
 
 **Model Explanation (optional tooltip/expand):**
-> "Opus is our most capable model, used for strategic planning and complex reasoning. Fallback models ensure availability if Opus is unavailable."
+> "GPT-5.5 Pro is used for strategic planning and complex judgment. GPT-5.5 covers production execution, and vLLM/Qwen provides a local fallback for availability, cost control, and private high-volume work."
 
 ---
 

@@ -18,7 +18,7 @@ primary_model: "[Model name]"
 fallback_chain:
   - "[Fallback 1]"
   - "[Fallback 2]"
-  - "ollama/GPTOSS:120b"  # Always ultimate fallback
+  - "vllm/qwen3.6"  # Recommended local fallback
 ```
 
 ## PERSONALITY

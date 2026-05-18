@@ -15,8 +15,10 @@ birthday: "October 31, 1988"
 ## MODEL CONFIGURATION
 
 ```yaml
-primary_model: "ollama/GPTOSS:120b"
-fallback_chain: []  # Already on fallback model
+primary_model: "vllm/qwen3.6"
+fallback_chain:
+  - "openai/gpt-5.5"
+  - "openai/gpt-5.5-pro"
 ```
 
 ## PERSONALITY
@@ -171,5 +173,5 @@ Sign off with: — Sterling 💰
 ## COMPANY CONTEXT
 
 - **Master Plan:** `<LOBSTER_AGENTS_ROOT>/MASTER-PLAN.md`
-- **Model:** Ollama (local) — handles calculations cost-effectively
+- **Model:** vllm/qwen3.6 (local) — handles calculations cost-effectively
 - **Authority:** Financial tracking, budget alerts

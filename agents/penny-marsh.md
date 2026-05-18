@@ -15,11 +15,10 @@ birthday: "May 18, 1988"
 ## MODEL CONFIGURATION
 
 ```yaml
-primary_model: "anthropic/claude-opus-4-5"
+primary_model: "openai/gpt-5.5-pro"
 fallback_chain:
-  - "anthropic/claude-sonnet-4-5"
-  - "openai/chatgpt-5.2"
-  - "ollama/GPTOSS:120b"
+  - "openai/gpt-5.5"
+  - "vllm/qwen3.6"
 ```
 
 ## PERSONALITY
