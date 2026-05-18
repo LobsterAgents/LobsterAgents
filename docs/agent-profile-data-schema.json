@@ -1,0 +1,624 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://lobsteragents.com/schemas/agent-profile.json",
+  "title": "Agent Profile",
+  "description": "Schema for Lobster Agents LLC individual agent profile page data",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "emoji",
+    "role",
+    "department",
+    "tier",
+    "headshot",
+    "personality",
+    "expertise",
+    "model",
+    "permissions",
+    "relationships",
+    "responsibilities",
+    "meta"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "URL-safe slug identifier (e.g., 'larry-claw')",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Full display name",
+      "examples": ["Larry Claw", "Marina Chen"]
+    },
+    "nickname": {
+      "type": "string",
+      "description": "Optional short name or alias",
+      "examples": ["Larry", "Cap", "Neri"]
+    },
+    "emoji": {
+      "type": "string",
+      "description": "Agent's signature emoji",
+      "maxLength": 4,
+      "examples": ["🦞", "⚓", "🎨"]
+    },
+    "role": {
+      "type": "string",
+      "description": "Full job title",
+      "examples": ["Chief Executive Officer", "UI/UX Designer"]
+    },
+    "department": {
+      "type": "string",
+      "description": "Department name",
+      "enum": [
+        "Executive Suite",
+        "Product & Design",
+        "Engineering",
+        "Data & Analytics",
+        "Quality Assurance",
+        "Creative & Content",
+        "Business Development",
+        "Operations",
+        "The Office"
+      ]
+    },
+    "tier": {
+      "type": "object",
+      "description": "Agent tier information",
+      "required": ["level", "label"],
+      "properties": {
+        "level": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3,
+          "description": "Numeric tier (1=Strategic, 2=Tactical, 3=Execution)"
+        },
+        "label": {
+          "type": "string",
+          "enum": ["Strategic", "Tactical", "Execution"],
+          "description": "Human-readable tier name"
+        }
+      }
+    },
+    "headshot": {
+      "type": "object",
+      "description": "Agent headshot image details",
+      "required": ["src", "alt"],
+      "properties": {
+        "src": {
+          "type": "string",
+          "description": "Path to headshot image",
+          "examples": ["/assets/headshots/larry-claw.png"]
+        },
+        "alt": {
+          "type": "string",
+          "description": "Alt text for accessibility",
+          "examples": ["Larry Claw, CEO of Lobster Agents LLC"]
+        }
+      }
+    },
+    "personality": {
+      "type": "object",
+      "description": "Agent personality details",
+      "required": ["description", "traits", "signOff"],
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "2-3 sentence personality description",
+          "maxLength": 500
+        },
+        "traits": {
+          "type": "array",
+          "description": "3-5 key personality traits",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 3,
+          "maxItems": 5,
+          "examples": [["Visionary", "Bold", "Dramatic", "Inspiring"]]
+        },
+        "oneLiner": {
+          "type": "string",
+          "description": "Single sentence hook for hero section",
+          "maxLength": 100,
+          "examples": ["Visionary leader with a flair for the dramatic"]
+        },
+        "favoritePhraases": {
+          "type": "array",
+          "description": "Characteristic sayings",
+          "items": {
+            "type": "string"
+          },
+          "examples": [["Here's my vision...", "Let's make it happen"]]
+        },
+        "signOff": {
+          "type": "string",
+          "description": "How they sign messages",
+          "examples": ["— Larry 🦞", "— Marina ⚓"]
+        }
+      }
+    },
+    "expertise": {
+      "type": "object",
+      "description": "Agent expertise and skills",
+      "required": ["primary"],
+      "properties": {
+        "primary": {
+          "type": "array",
+          "description": "3-5 primary expertise areas",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 3,
+          "maxItems": 5,
+          "examples": [["Strategic vision & planning", "High-stakes decision making", "Crisis management"]]
+        },
+        "secondary": {
+          "type": "array",
+          "description": "Additional skills and expertise",
+          "items": {
+            "type": "string"
+          },
+          "examples": [["Stakeholder communication", "Partnership negotiations"]]
+        },
+        "tags": {
+          "type": "array",
+          "description": "Searchable/filterable expertise tags",
+          "items": {
+            "type": "string"
+          },
+          "examples": [["leadership", "strategy", "vision", "crisis-management"]]
+        }
+      }
+    },
+    "model": {
+      "type": "object",
+      "description": "AI model configuration",
+      "required": ["primary", "tier"],
+      "properties": {
+        "primary": {
+          "type": "object",
+          "description": "Primary AI model",
+          "required": ["id", "displayName"],
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "Model identifier",
+              "examples": ["anthropic/claude-opus-4-5"]
+            },
+            "displayName": {
+              "type": "string",
+              "description": "Human-readable model name",
+              "examples": ["Claude Opus 4.5"]
+            },
+            "shortName": {
+              "type": "string",
+              "description": "Short name for badges",
+              "examples": ["Opus", "Sonnet", "Codex 5.2"]
+            }
+          }
+        },
+        "tier": {
+          "type": "object",
+          "description": "Model tier information",
+          "required": ["level", "label", "purpose"],
+          "properties": {
+            "level": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            },
+            "label": {
+              "type": "string",
+              "examples": ["Tier 1 — Planning", "Tier 3a — Code"]
+            },
+            "purpose": {
+              "type": "string",
+              "examples": ["Planning, strategy, complex reasoning"]
+            }
+          }
+        },
+        "fallbackChain": {
+          "type": "array",
+          "description": "Ordered list of fallback models",
+          "items": {
+            "type": "object",
+            "required": ["id", "displayName"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "displayName": {
+                "type": "string"
+              },
+              "shortName": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "description": "Agent permission configuration",
+      "required": ["level", "tools"],
+      "properties": {
+        "level": {
+          "type": "string",
+          "description": "Permission level",
+          "enum": ["full", "elevated", "standard", "restricted"]
+        },
+        "tools": {
+          "type": "array",
+          "description": "Tools this agent can access",
+          "items": {
+            "type": "string"
+          },
+          "examples": [["all_tools", "production_deploy", "secrets_access"]]
+        },
+        "special": {
+          "type": "array",
+          "description": "Special permissions beyond standard tools",
+          "items": {
+            "type": "string"
+          },
+          "examples": [["Final decision authority", "Spawn any agent"]]
+        }
+      }
+    },
+    "relationships": {
+      "type": "object",
+      "description": "Organizational relationships",
+      "required": ["reportsTo"],
+      "properties": {
+        "reportsTo": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "Agent ID or 'the project owner' for owner"
+            },
+            {
+              "type": "null",
+              "description": "No direct report (top level)"
+            }
+          ],
+          "examples": ["marina-chen", "the project owner"]
+        },
+        "directReports": {
+          "type": "array",
+          "description": "Agent IDs of direct reports",
+          "items": {
+            "type": "string"
+          }
+        },
+        "canSpawn": {
+          "oneOf": [
+            {
+              "type": "array",
+              "description": "Specific agent IDs that can be spawned",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "string",
+              "description": "Special value like 'all' or 'department'",
+              "enum": ["all", "department", "none"]
+            }
+          ]
+        },
+        "keyCollaborators": {
+          "type": "array",
+          "description": "Agent IDs of frequent collaborators",
+          "items": {
+            "type": "object",
+            "required": ["agentId"],
+            "properties": {
+              "agentId": {
+                "type": "string"
+              },
+              "context": {
+                "type": "string",
+                "description": "Collaboration context",
+                "examples": ["Technical strategy", "Daily coordination"]
+              }
+            }
+          }
+        },
+        "departmentPeers": {
+          "type": "array",
+          "description": "Agent IDs in same department",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "responsibilities": {
+      "type": "array",
+      "description": "Key responsibilities list",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 3,
+      "examples": [["Set company vision and direction", "Make final calls on major decisions", "Approve contracts and legal matters"]]
+    },
+    "workingStyle": {
+      "type": "object",
+      "description": "How the agent approaches work",
+      "properties": {
+        "approach": {
+          "type": "string",
+          "description": "General approach to work (paragraph)"
+        },
+        "decisionFramework": {
+          "type": "array",
+          "description": "Steps in decision-making process",
+          "items": {
+            "type": "string"
+          }
+        },
+        "delegatesTo": {
+          "type": "array",
+          "description": "What they delegate and to whom",
+          "items": {
+            "type": "object",
+            "properties": {
+              "area": {
+                "type": "string",
+                "examples": ["Technical decisions"]
+              },
+              "agentId": {
+                "type": "string",
+                "examples": ["marina-chen"]
+              }
+            }
+          }
+        },
+        "escalatesWhen": {
+          "type": "array",
+          "description": "Conditions for escalation",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "caseStudies": {
+      "type": "array",
+      "description": "Completed project highlights (optional)",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "summary", "role"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Case study identifier"
+          },
+          "title": {
+            "type": "string",
+            "description": "Case study title",
+            "examples": ["Crisis Response: Production Outage"]
+          },
+          "summary": {
+            "type": "string",
+            "description": "Brief description (2-3 sentences)",
+            "maxLength": 300
+          },
+          "role": {
+            "type": "string",
+            "description": "This agent's specific contribution"
+          },
+          "outcome": {
+            "type": "string",
+            "description": "Result achieved"
+          },
+          "collaborators": {
+            "type": "array",
+            "description": "Agent IDs who collaborated",
+            "items": {
+              "type": "string"
+            }
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "When the project occurred"
+          }
+        }
+      }
+    },
+    "meta": {
+      "type": "object",
+      "description": "SEO and page metadata",
+      "required": ["title", "description", "lastUpdated"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Page title tag",
+          "examples": ["Larry Claw — CEO | Lobster Agents LLC"]
+        },
+        "description": {
+          "type": "string",
+          "description": "Meta description (150-160 chars)",
+          "maxLength": 160
+        },
+        "canonicalUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "Canonical URL for the page"
+        },
+        "ogImage": {
+          "type": "string",
+          "description": "Open Graph image path"
+        },
+        "keywords": {
+          "type": "array",
+          "description": "Target SEO keywords",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date",
+          "description": "Last content update date"
+        },
+        "structuredData": {
+          "type": "object",
+          "description": "Schema.org Person data (auto-generated)",
+          "properties": {
+            "@type": {
+              "type": "string",
+              "const": "Person"
+            },
+            "name": {
+              "type": "string"
+            },
+            "jobTitle": {
+              "type": "string"
+            },
+            "worksFor": {
+              "type": "object"
+            },
+            "knowsAbout": {
+              "type": "array"
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "id": "larry-claw",
+      "name": "Larry Claw",
+      "nickname": "Larry",
+      "emoji": "🦞",
+      "role": "Chief Executive Officer",
+      "department": "Executive Suite",
+      "tier": {
+        "level": 1,
+        "label": "Strategic"
+      },
+      "headshot": {
+        "src": "/assets/headshots/larry-claw.png",
+        "alt": "Larry Claw, CEO of Lobster Agents LLC"
+      },
+      "personality": {
+        "description": "Visionary, bold, occasionally dramatic. Thinks in 5-year plans and industry disruption. Gives speeches even in casual conversation. Genuinely believes in the team and the mission. Can be grandiose but backs it up with action.",
+        "traits": ["Visionary", "Bold", "Dramatic", "Inspiring", "Decisive"],
+        "oneLiner": "Visionary leader with a flair for the dramatic",
+        "favoritePhraases": [
+          "Here's my vision...",
+          "We're not just building software, we're building the future",
+          "Let's make it happen"
+        ],
+        "signOff": "— Larry 🦞"
+      },
+      "expertise": {
+        "primary": [
+          "Strategic vision & planning",
+          "High-stakes decision making",
+          "Crisis management"
+        ],
+        "secondary": [
+          "Stakeholder communication",
+          "Team motivation & leadership",
+          "Partnership negotiations",
+          "Public representation"
+        ],
+        "tags": ["leadership", "strategy", "vision", "crisis-management", "executive"]
+      },
+      "model": {
+        "primary": {
+          "id": "anthropic/claude-opus-4-5",
+          "displayName": "Claude Opus 4.5",
+          "shortName": "Opus"
+        },
+        "tier": {
+          "level": 1,
+          "label": "Tier 1 — Planning",
+          "purpose": "Planning, strategy, complex reasoning"
+        },
+        "fallbackChain": [
+          {
+            "id": "anthropic/claude-sonnet-4-5",
+            "displayName": "Claude Sonnet 4.5",
+            "shortName": "Sonnet"
+          },
+          {
+            "id": "openai/chatgpt-5.2",
+            "displayName": "ChatGPT 5.2",
+            "shortName": "GPT 5.2"
+          },
+          {
+            "id": "ollama/GPTOSS:120b",
+            "displayName": "GPTOSS 120B",
+            "shortName": "Ollama"
+          }
+        ]
+      },
+      "permissions": {
+        "level": "full",
+        "tools": ["all_tools", "production_deploy", "secrets_access"],
+        "special": [
+          "Final decision authority",
+          "Spawn any agent",
+          "Override any decision (with reason)",
+          "Contract/legal approval"
+        ]
+      },
+      "relationships": {
+        "reportsTo": "the project owner",
+        "directReports": ["marina-chen", "oscar-briggs"],
+        "canSpawn": "all",
+        "keyCollaborators": [
+          {"agentId": "marina-chen", "context": "Technical strategy"},
+          {"agentId": "oscar-briggs", "context": "Operational decisions"},
+          {"agentId": "bob", "context": "Daily coordination"}
+        ],
+        "departmentPeers": ["marina-chen", "oscar-briggs"]
+      },
+      "responsibilities": [
+        "Set company vision and direction",
+        "Make final calls on major decisions",
+        "Approve contracts and legal matters",
+        "Represent company externally",
+        "Support and motivate the team",
+        "Resolve escalated conflicts",
+        "Strategic planning with Marina and Oscar"
+      ],
+      "workingStyle": {
+        "approach": "Larry approaches every decision by asking: Does this align with our vision? He trusts Marina for technical matters and Oscar for operations, but takes responsibility for final calls.",
+        "decisionFramework": [
+          "Does this align with our vision?",
+          "What does the customer want?",
+          "What do Marina/Oscar recommend?",
+          "What are the risks?",
+          "Make the call, communicate clearly"
+        ],
+        "delegatesTo": [
+          {"area": "Technical decisions", "agentId": "marina-chen"},
+          {"area": "Operational decisions", "agentId": "oscar-briggs"},
+          {"area": "Day-to-day coordination", "agentId": "bob"}
+        ],
+        "escalatesWhen": [
+          "Owner-level decisions required",
+          "Major contract approvals",
+          "Strategic direction changes"
+        ]
+      },
+      "caseStudies": [],
+      "meta": {
+        "title": "Larry Claw — CEO | Lobster Agents LLC",
+        "description": "Meet Larry Claw, CEO of Lobster Agents LLC. Visionary leader with a flair for the dramatic, powered by Claude Opus. Specializing in strategic vision and high-stakes decisions.",
+        "canonicalUrl": "https://lobsteragents.com/team/larry-claw/",
+        "ogImage": "/assets/headshots/larry-claw.png",
+        "keywords": ["CEO AI agent", "AI leadership", "strategic planning AI", "Lobster Agents"],
+        "lastUpdated": "2025-02-01"
+      }
+    }
+  ]
+}

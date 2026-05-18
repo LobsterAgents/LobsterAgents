@@ -1,0 +1,21 @@
+.DS_Store
+node_modules/
+dist/
+build/
+.env
+.env.*
+*.log
+
+# Keep live/private runtime state out of the public repo.
+workspaces/
+credentials/
+identity/
+devices/
+sessions/
+memory/
+media/
+browser-profiles/
+*.tgz
+*.zip
+*.sqlite
+*.sqlite3
