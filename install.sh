@@ -83,7 +83,24 @@ bootstrap_openclaw_state() {
 
   echo "OpenClaw config not found at $OPENCLAW_CONFIG."
   echo "Creating baseline OpenClaw state..."
-  openclaw setup --non-interactive --workspace "$OPENCLAW_HOME/workspace"
+  openclaw onboard \
+    --non-interactive \
+    --accept-risk \
+    --auth-choice skip \
+    --skip-daemon \
+    --skip-channels \
+    --skip-skills \
+    --skip-search \
+    --skip-ui \
+    --skip-health \
+    --workspace "$OPENCLAW_HOME/workspace"
+
+  if [[ ! -f "$OPENCLAW_CONFIG" ]]; then
+    echo "ERROR: OpenClaw onboarding completed, but config was not created at $OPENCLAW_CONFIG." >&2
+    echo "Run OpenClaw onboarding manually, then rerun ./install.sh:" >&2
+    echo "  openclaw onboard --accept-risk" >&2
+    exit 1
+  fi
 }
 
 install_openclaw_cli

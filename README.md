@@ -45,7 +45,7 @@ scripts/      Validation and maintenance scripts
 To install from a release tarball:
 
 ~~~bash
-npm install -g ./lobsterclaw-0.1.2.tgz
+npm install -g ./lobsterclaw-0.1.3.tgz
 lobsterclaw install
 lobsterclaw doctor
 ~~~
