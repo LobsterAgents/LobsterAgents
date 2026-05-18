@@ -5,6 +5,7 @@ INSTALL_DIR="${LOBSTERCLAW_HOME:-$HOME/.lobsterclaw}"
 BIN_DIR="${LOBSTERCLAW_BIN_DIR:-$HOME/.local/bin}"
 OPENCLAW_HOME="${OPENCLAW_HOME:-$HOME/.openclaw}"
 OPENCLAW_CONFIG="${OPENCLAW_CONFIG:-$OPENCLAW_HOME/openclaw.json}"
+NPM_USER_PREFIX="${NPM_CONFIG_PREFIX:-$HOME/.npm-global}"
 
 is_wsl() {
   grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null
@@ -46,6 +47,44 @@ Then verify these paths are Linux paths, not /mnt/c/... paths:
 EOF
 }
 
+can_write_under() {
+  local path="$1"
+  local probe="$path"
+
+  while [[ ! -e "$probe" ]]; do
+    probe="$(dirname "$probe")"
+  done
+
+  [[ -w "$probe" ]]
+}
+
+ensure_npm_user_prefix() {
+  local prefix
+  local global_modules
+
+  prefix="$(npm config get prefix 2>/dev/null || true)"
+  [[ -n "$prefix" && "$prefix" != "undefined" && "$prefix" != "null" ]] || return
+
+  if [[ "$(id -u)" -eq 0 ]]; then
+    return
+  fi
+
+  global_modules="$prefix/lib/node_modules"
+  if can_write_under "$global_modules"; then
+    export PATH="$prefix/bin:$PATH"
+    return
+  fi
+
+  mkdir -p "$NPM_USER_PREFIX/bin"
+  npm config set prefix "$NPM_USER_PREFIX" >/dev/null
+  export PATH="$NPM_USER_PREFIX/bin:$PATH"
+  hash -r
+
+  echo "npm global prefix '$prefix' is not writable."
+  echo "Using user-owned npm global prefix: $NPM_USER_PREFIX"
+  echo
+}
+
 install_openclaw_cli() {
   if is_usable_command openclaw; then
     return
@@ -60,6 +99,8 @@ install_openclaw_cli() {
     echo "Install Node.js/npm first, then rerun ./install.sh." >&2
     exit 1
   fi
+
+  ensure_npm_user_prefix
 
   echo "OpenClaw CLI not found. Installing OpenClaw with npm..."
   npm install -g openclaw
