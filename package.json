@@ -1,0 +1,25 @@
+{
+  "name": "lobsterclaw",
+  "version": "0.1.2",
+  "description": "Lobster Agents company installer for OpenClaw",
+  "license": "MIT",
+  "bin": {
+    "lobsterclaw": "bin/lobsterclaw"
+  },
+  "files": [
+    "agents/",
+    "assets/",
+    "bin/",
+    "docs/",
+    "manifests/",
+    "processes/",
+    "skills/",
+    "templates/",
+    "doctor.sh",
+    "install.sh",
+    "uninstall.sh",
+    "LOBSTER-AGENTS.md",
+    "MASTER-PLAN.md",
+    "README.md"
+  ]
+}

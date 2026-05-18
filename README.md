@@ -8,6 +8,7 @@ It is designed for OpenClaw-style agent orchestration, but the method is portabl
 
 - A full multi-department agent roster
 - Individual agent profiles with role, model, tools, responsibilities, and system prompt
+- A packaged `lobsterclaw` installer for OpenClaw
 - A reusable agent profile template
 - Project lifecycle and approval gates
 - Orchestration guidance for routing work across agents
@@ -33,11 +34,23 @@ Use this repo as a framework, then layer your own private state and credentials 
 agents/       Individual agent profiles
 docs/         Architecture, setup, lifecycle, and workflow notes
 examples/     Example config snippets and orchestration flows
+manifests/    Agent roster metadata used by the installer
+skills/       OpenClaw orchestration skill packaged by the installer
 templates/    Reusable templates for new agents and projects
 scripts/      Validation and maintenance scripts
 ~~~
 
 ## Quick Start
+
+To install from a release tarball:
+
+~~~bash
+npm install -g ./lobsterclaw-0.1.2.tgz
+lobsterclaw install
+lobsterclaw doctor
+~~~
+
+To use the repository manually:
 
 1. Copy the agent profiles you want from agents/.
 2. Edit model names and tool permissions for your runtime.

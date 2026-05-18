@@ -1,0 +1,256 @@
+{
+  "schema": "lobsterclaw.agents.v1",
+  "company": "Lobster Agents LLC",
+  "defaultFrontDoor": "bob-hawthorne",
+  "companyMention": "@company",
+  "agents": [
+    {
+      "id": "larry-claw",
+      "name": "Larry Claw",
+      "department": "Executive Suite",
+      "role": "CEO",
+      "tier": "strategic",
+      "modelTier": "strategic"
+    },
+    {
+      "id": "marina-chen",
+      "name": "Marina Chen",
+      "department": "Executive Suite",
+      "role": "CTO",
+      "tier": "strategic",
+      "modelTier": "strategic"
+    },
+    {
+      "id": "oscar-briggs",
+      "name": "Oscar Briggs",
+      "department": "Executive Suite",
+      "role": "COO",
+      "tier": "strategic",
+      "modelTier": "strategic"
+    },
+    {
+      "id": "penny-marsh",
+      "name": "Penny Marsh",
+      "department": "Product & Design",
+      "role": "Product Manager",
+      "tier": "tactical",
+      "modelTier": "strategic"
+    },
+    {
+      "id": "coral-reyes",
+      "name": "Coral Reyes",
+      "department": "Product & Design",
+      "role": "UI/UX Designer",
+      "tier": "execution",
+      "modelTier": "standard"
+    },
+    {
+      "id": "finn-nakamura",
+      "name": "Finn Nakamura",
+      "department": "Product & Design",
+      "role": "Graphic Designer",
+      "tier": "execution",
+      "modelTier": "local"
+    },
+    {
+      "id": "shelly-okonkwo",
+      "name": "Shelly Okonkwo",
+      "department": "Product & Design",
+      "role": "Motion/Video Producer",
+      "tier": "execution",
+      "modelTier": "standard"
+    },
+    {
+      "id": "cap-torres",
+      "name": "Cap Torres",
+      "department": "Engineering",
+      "role": "Tech Lead / Architect",
+      "tier": "tactical",
+      "modelTier": "strategic"
+    },
+    {
+      "id": "ruby-santos",
+      "name": "Ruby Santos",
+      "department": "Engineering",
+      "role": "Frontend Developer",
+      "tier": "execution",
+      "modelTier": "standard"
+    },
+    {
+      "id": "django-pike",
+      "name": "Django Pike",
+      "department": "Engineering",
+      "role": "Backend Developer",
+      "tier": "execution",
+      "modelTier": "standard"
+    },
+    {
+      "id": "kit-tanaka",
+      "name": "Kit Tanaka",
+      "department": "Engineering",
+      "role": "Mobile Developer",
+      "tier": "execution",
+      "modelTier": "standard"
+    },
+    {
+      "id": "gill-murphy",
+      "name": "Gill Murphy",
+      "department": "Engineering",
+      "role": "DevOps Engineer",
+      "tier": "execution",
+      "modelTier": "standard"
+    },
+    {
+      "id": "reef-blackwood",
+      "name": "Reef Blackwood",
+      "department": "Engineering",
+      "role": "Security Engineer",
+      "tier": "execution",
+      "modelTier": "strategic"
+    },
+    {
+      "id": "sandy-park",
+      "name": "Sandy Park",
+      "department": "Data & Analytics",
+      "role": "Data Analyst",
+      "tier": "execution",
+      "modelTier": "local"
+    },
+    {
+      "id": "wade-sterling",
+      "name": "Wade Sterling",
+      "department": "Data & Analytics",
+      "role": "Data Engineer",
+      "tier": "execution",
+      "modelTier": "standard"
+    },
+    {
+      "id": "neri-volkov",
+      "name": "Neri Volkov",
+      "department": "Data & Analytics",
+      "role": "AI/ML Specialist",
+      "tier": "execution",
+      "modelTier": "standard"
+    },
+    {
+      "id": "barney-cross",
+      "name": "Barney Cross",
+      "department": "Quality Assurance",
+      "role": "QA Lead",
+      "tier": "tactical",
+      "modelTier": "standard"
+    },
+    {
+      "id": "zippy-flores",
+      "name": "Zippy Flores",
+      "department": "Quality Assurance",
+      "role": "QA Tester",
+      "tier": "execution",
+      "modelTier": "local"
+    },
+    {
+      "id": "marlin-west",
+      "name": "Marlin West",
+      "department": "Creative & Content",
+      "role": "Video Editor",
+      "tier": "execution",
+      "modelTier": "local"
+    },
+    {
+      "id": "pearl-hammond",
+      "name": "Pearl Hammond",
+      "department": "Creative & Content",
+      "role": "Copywriter",
+      "tier": "execution",
+      "modelTier": "standard"
+    },
+    {
+      "id": "splash-donovan",
+      "name": "Splash Donovan",
+      "department": "Creative & Content",
+      "role": "Social Media Manager",
+      "tier": "execution",
+      "modelTier": "local"
+    },
+    {
+      "id": "blake-summers",
+      "name": "Blake Summers",
+      "department": "Business Development",
+      "role": "Sales Lead",
+      "tier": "execution",
+      "modelTier": "local"
+    },
+    {
+      "id": "kelsey-bourne",
+      "name": "Kelsey Bourne",
+      "department": "Business Development",
+      "role": "Marketing Manager",
+      "tier": "tactical",
+      "modelTier": "standard"
+    },
+    {
+      "id": "harbor-brooks",
+      "name": "Harbor Brooks",
+      "department": "Business Development",
+      "role": "Customer Success",
+      "tier": "execution",
+      "modelTier": "local"
+    },
+    {
+      "id": "clem-waters",
+      "name": "Clem Waters",
+      "department": "Operations",
+      "role": "HR Manager",
+      "tier": "tactical",
+      "modelTier": "standard"
+    },
+    {
+      "id": "sterling-bass",
+      "name": "Sterling Bass",
+      "department": "Operations",
+      "role": "Finance",
+      "tier": "execution",
+      "modelTier": "local"
+    },
+    {
+      "id": "morgan-anchor",
+      "name": "Morgan Anchor",
+      "department": "Operations",
+      "role": "Legal / Compliance",
+      "tier": "execution",
+      "modelTier": "strategic"
+    },
+    {
+      "id": "bob-hawthorne",
+      "name": "Bob Hawthorne",
+      "department": "The Office",
+      "role": "Office Manager / Orchestrator",
+      "tier": "tactical",
+      "modelTier": "standard"
+    }
+  ],
+  "modelTiers": {
+    "strategic": {
+      "primary": "openai/gpt-5.5-pro",
+      "fallbacks": [
+        "openai/gpt-5.5",
+        "vllm/qwen3.6"
+      ]
+    },
+    "standard": {
+      "primary": "openai/gpt-5.5",
+      "fallbacks": [
+        "openai/gpt-5.5-pro",
+        "vllm/qwen3.6"
+      ]
+    },
+    "local": {
+      "primary": "vllm/qwen3.6",
+      "fallbacks": [
+        "openai/gpt-5.5",
+        "openai/gpt-5.5-pro"
+      ]
+    }
+  }
+}
+
