@@ -1,6 +1,6 @@
 {
   "name": "lobsterclaw",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Lobster Agents company installer for OpenClaw",
   "license": "MIT",
   "bin": {

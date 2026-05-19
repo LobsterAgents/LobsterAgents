@@ -45,13 +45,13 @@ scripts/      Validation and maintenance scripts
 To install from a release tarball:
 
 ~~~bash
-tar -xzf lobsterclaw-0.1.5.tgz
+tar -xzf lobsterclaw-0.1.6.tgz
 cd package
 ./install.sh
 ~/.local/bin/lobsterclaw doctor
 ~~~
 
-If OpenClaw is not already installed, `install.sh` delegates bootstrap to the official OpenClaw installer from `https://openclaw.ai/install.sh`. Lobsterclaw only handles the Lobster Agents files and OpenClaw config patching after the OpenClaw CLI is usable.
+Install and set up OpenClaw before running `lobsterclaw`. If OpenClaw is missing, or setup has not created `~/.openclaw/openclaw.json` yet, `install.sh` exits with the official OpenClaw install/setup command instead of trying to bootstrap OpenClaw itself.
 
 To use the repository manually:
 
