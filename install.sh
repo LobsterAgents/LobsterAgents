@@ -69,17 +69,7 @@ prompt_models() {
     *) return ;;
   esac
 
-  echo "Example for your test machine:"
-  echo "  strategic: openai/gpt-5.5"
-  echo "  standard/local: vllm/qwen3.6-fp8"
-  read -r -p "Strategic model [openai/gpt-5.5]: " strategic || return
-  read -r -p "Standard model [vllm/qwen3.6-fp8]: " standard || return
-  read -r -p "Local model [same as standard]: " local_model || return
-
-  strategic="${strategic:-openai/gpt-5.5}"
-  standard="${standard:-vllm/qwen3.6-fp8}"
-  local_model="${local_model:-$standard}"
-  "$BIN_DIR/lobsteragents" models "$strategic" "$standard" "$local_model"
+  "$BIN_DIR/lobsteragents" models
 }
 
 require_openclaw_ready() {

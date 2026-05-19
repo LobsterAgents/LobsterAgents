@@ -21,6 +21,7 @@ usage() {
     '' \
     'Usage:' \
     '  lobsteragents install           Install or update the LobsterAgents roster' \
+    '  lobsteragents models list       Show models found in OpenClaw config' \
     '  lobsteragents models [models]   Set models for installed LobsterAgents' \
     '  lobsteragents connect [agent]   Connect an existing OpenClaw agent as liaison' \
     '  lobsteragents disconnect [agent] Remove liaison wiring from an OpenClaw agent' \
@@ -174,33 +175,129 @@ models_cmd() {
   local standard="${2:-}"
   local local_model="${3:-}"
 
-  if [[ -z "$strategic" || -z "$standard" ]]; then
-    if [[ -t 0 && -t 1 ]]; then
-      echo "Configure LobsterAgents models. Leave blank to keep the current value for that tier."
-      if [[ -z "$strategic" ]]; then
-        read -r -p "Strategic model: " strategic
-      fi
-      if [[ -z "$standard" ]]; then
-        read -r -p "Standard model: " standard
-      fi
-      read -r -p "Local model [same as standard]: " local_model
-    else
-      echo "Usage: lobsteragents models <strategic-model> <standard-model> [local-model]" >&2
-      exit 2
-    fi
-  fi
+  if [[ "$strategic" == "list" || "$strategic" == "--list" ]]; then
+    python3 - "$CONFIG_PATH" <<'PY'
+import json, sys
+from pathlib import Path
 
-  [[ -n "$local_model" ]] || local_model="$standard"
+cfg = json.loads(Path(sys.argv[1]).read_text())
+seen = set()
+models = []
+
+def add(value, source):
+    if isinstance(value, str) and value and value not in seen:
+        seen.add(value)
+        models.append((value, source))
+
+for provider, pcfg in cfg.get("models", {}).get("providers", {}).items():
+    if isinstance(pcfg, dict):
+        for model in pcfg.get("models", []) or []:
+            if isinstance(model, dict) and model.get("id"):
+                add(f"{provider}/{model['id']}", "provider")
+
+for agent in cfg.get("agents", {}).get("list", []) or []:
+    if not isinstance(agent, dict):
+        continue
+    model = agent.get("model")
+    if not isinstance(model, dict):
+        continue
+    add(model.get("primary"), f"agent:{agent.get('id', 'unknown')}")
+    for fallback in model.get("fallbacks", []) or []:
+        add(fallback, f"agent:{agent.get('id', 'unknown')}")
+
+for idx, (model, source) in enumerate(models, 1):
+    print(f"{idx}. {model} ({source})")
+if not models:
+    print("No models found in OpenClaw config.")
+PY
+    return
+  fi
 
   local backup; backup="$(backup_config)"
   python3 - "$CONFIG_PATH" "$MANIFEST" "$strategic" "$standard" "$local_model" <<'PY'
 import json, sys
 from pathlib import Path
+
 config_path = Path(sys.argv[1])
 manifest_path = Path(sys.argv[2])
-models = {"strategic": sys.argv[3], "standard": sys.argv[4], "local": sys.argv[5]}
+strategic_arg, standard_arg, local_arg = sys.argv[3], sys.argv[4], sys.argv[5]
 cfg = json.loads(config_path.read_text())
 manifest = json.loads(manifest_path.read_text())
+
+seen = set()
+available = []
+
+def add(value, source):
+    if isinstance(value, str) and value and value not in seen:
+        seen.add(value)
+        available.append((value, source))
+
+for provider, pcfg in cfg.get("models", {}).get("providers", {}).items():
+    if isinstance(pcfg, dict):
+        for model in pcfg.get("models", []) or []:
+            if isinstance(model, dict) and model.get("id"):
+                add(f"{provider}/{model['id']}", "provider")
+
+for agent in cfg.get("agents", {}).get("list", []) or []:
+    if not isinstance(agent, dict):
+        continue
+    model = agent.get("model")
+    if not isinstance(model, dict):
+        continue
+    add(model.get("primary"), f"agent:{agent.get('id', 'unknown')}")
+    for fallback in model.get("fallbacks", []) or []:
+        add(fallback, f"agent:{agent.get('id', 'unknown')}")
+
+def resolve(value):
+    value = (value or "").strip()
+    if not value:
+        return ""
+    if value.isdigit():
+        idx = int(value)
+        if 1 <= idx <= len(available):
+            return available[idx - 1][0]
+    return value
+
+def preferred_index(kind):
+    for idx, (model, _) in enumerate(available, 1):
+        lower = model.lower()
+        if kind == "strategic" and ("gpt" in lower or "claude" in lower or "opus" in lower):
+            return idx
+        if kind in ("standard", "local") and ("vllm" in lower or "ollama" in lower or "qwen" in lower):
+            return idx
+    return 1 if available else None
+
+def pick(kind, supplied):
+    resolved = resolve(supplied)
+    if resolved:
+        return resolved
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
+        print("Usage: lobsteragents models <strategic-model> <standard-model> [local-model]", file=sys.stderr)
+        print("Run `lobsteragents models list` to show configured OpenClaw models.", file=sys.stderr)
+        sys.exit(2)
+    if not available:
+        return input(f"{kind.title()} model: ").strip()
+    print(f"\nChoose {kind} model:")
+    for idx, (model, source) in enumerate(available, 1):
+        print(f"  {idx}) {model} [{source}]")
+    default_idx = preferred_index(kind)
+    default_text = f" [{default_idx}]" if default_idx else ""
+    choice = input(f"{kind.title()} model number or id{default_text}: ").strip()
+    if not choice and default_idx:
+        return available[default_idx - 1][0]
+    return resolve(choice)
+
+strategic = pick("strategic", strategic_arg)
+standard = pick("standard", standard_arg)
+local = resolve(local_arg)
+if not local:
+    if sys.stdin.isatty() and sys.stdout.isatty():
+        choice = input(f"Local model number or id [same as standard: {standard}]: ").strip()
+        local = resolve(choice) if choice else standard
+    else:
+        local = standard
+
+models = {"strategic": strategic, "standard": standard, "local": local}
 agents = cfg.get("agents", {}).get("list", [])
 by_id = {a.get("id"): a for a in agents if isinstance(a, dict) and a.get("id")}
 updated = []
