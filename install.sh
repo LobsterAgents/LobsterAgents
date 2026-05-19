@@ -5,7 +5,7 @@ INSTALL_DIR="${LOBSTERCLAW_HOME:-$HOME/.lobsterclaw}"
 BIN_DIR="${LOBSTERCLAW_BIN_DIR:-$HOME/.local/bin}"
 OPENCLAW_HOME="${OPENCLAW_HOME:-$HOME/.openclaw}"
 OPENCLAW_CONFIG="${OPENCLAW_CONFIG:-$OPENCLAW_HOME/openclaw.json}"
-NPM_USER_PREFIX="${NPM_CONFIG_PREFIX:-$HOME/.npm-global}"
+OPENCLAW_INSTALL_URL="${OPENCLAW_INSTALL_URL:-https://openclaw.ai/install.sh}"
 
 is_wsl() {
   grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null
@@ -31,88 +31,42 @@ is_usable_command() {
   "$name" --version >/dev/null 2>&1
 }
 
-print_wsl_node_help() {
-  cat >&2 <<'EOF'
-ERROR: WSL is seeing a Windows Node/npm/OpenClaw command instead of a Linux one.
+download_openclaw_installer() {
+  local dest="$1"
 
-Install Node.js inside WSL, then rerun ./install.sh:
-  curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
-  sudo apt-get install -y nodejs
-  hash -r
-
-Then verify these paths are Linux paths, not /mnt/c/... paths:
-  which node
-  which npm
-  which openclaw
-EOF
-}
-
-can_write_under() {
-  local path="$1"
-  local probe="$path"
-
-  while [[ ! -e "$probe" ]]; do
-    probe="$(dirname "$probe")"
-  done
-
-  [[ -w "$probe" ]]
-}
-
-ensure_npm_user_prefix() {
-  local prefix
-  local global_modules
-
-  prefix="$(npm config get prefix 2>/dev/null || true)"
-  [[ -n "$prefix" && "$prefix" != "undefined" && "$prefix" != "null" ]] || return
-
-  if [[ "$(id -u)" -eq 0 ]]; then
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL --proto '=https' --tlsv1.2 --retry 3 --retry-delay 1 -o "$dest" "$OPENCLAW_INSTALL_URL"
     return
   fi
 
-  global_modules="$prefix/lib/node_modules"
-  if can_write_under "$global_modules"; then
-    export PATH="$prefix/bin:$PATH"
+  if command -v wget >/dev/null 2>&1; then
+    wget -q --https-only --secure-protocol=TLSv1_2 -O "$dest" "$OPENCLAW_INSTALL_URL"
     return
   fi
 
-  mkdir -p "$NPM_USER_PREFIX/bin"
-  npm config set prefix "$NPM_USER_PREFIX" >/dev/null
-  export PATH="$NPM_USER_PREFIX/bin:$PATH"
-  hash -r
-
-  echo "npm global prefix '$prefix' is not writable."
-  echo "Using user-owned npm global prefix: $NPM_USER_PREFIX"
-  echo
+  echo "ERROR: OpenClaw is not installed, and neither curl nor wget is available to fetch the official installer." >&2
+  exit 1
 }
 
-install_openclaw_cli() {
+ensure_openclaw_cli() {
   if is_usable_command openclaw; then
     return
   fi
 
-  if ! is_usable_command npm; then
-    if is_wsl; then
-      print_wsl_node_help
-      exit 1
-    fi
-    echo "ERROR: openclaw was not found, and npm is not installed." >&2
-    echo "Install Node.js/npm first, then rerun ./install.sh." >&2
-    exit 1
-  fi
+  local installer
+  installer="$(mktemp)"
+  trap "rm -f '$installer'" EXIT
 
-  ensure_npm_user_prefix
-
-  echo "OpenClaw CLI not found. Installing OpenClaw with npm..."
-  npm install -g openclaw
+  echo "OpenClaw CLI not found or not usable. Running the official OpenClaw installer..."
+  download_openclaw_installer "$installer"
+  bash "$installer"
+  export PATH="$HOME/.local/bin:$OPENCLAW_HOME/bin:$HOME/.npm-global/bin:$PATH"
   hash -r
 
   if ! is_usable_command openclaw; then
-    if is_wsl; then
-      print_wsl_node_help
-    else
-      echo "ERROR: OpenClaw installed, but the openclaw command is not usable." >&2
-      echo "Check your npm global bin directory is on PATH, then rerun ./install.sh." >&2
-    fi
+    echo "ERROR: The official OpenClaw installer completed, but the openclaw command is still not usable." >&2
+    echo "Run the OpenClaw installer directly, then rerun ./install.sh:" >&2
+    echo "  curl -fsSL --proto '=https' --tlsv1.2 $OPENCLAW_INSTALL_URL | bash" >&2
     exit 1
   fi
 }
@@ -144,7 +98,7 @@ bootstrap_openclaw_state() {
   fi
 }
 
-install_openclaw_cli
+ensure_openclaw_cli
 bootstrap_openclaw_state
 
 mkdir -p "$INSTALL_DIR" "$BIN_DIR"
