@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
 set -euo pipefail
-"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/bin/lobsterclaw" doctor
-
+"$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/bin/lobsteragents" doctor

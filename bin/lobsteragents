@@ -10,25 +10,27 @@ while [[ -L "$SCRIPT" ]]; do
 done
 ROOT="$(cd -P "$(dirname "$SCRIPT")/.." && pwd)"
 OPENCLAW_HOME="${OPENCLAW_HOME:-$HOME/.openclaw}"
-DATA_HOME="${LOBSTERCLAW_DATA_HOME:-$HOME/Data/lobsteragents}"
+DATA_HOME="${LOBSTERAGENTS_DATA_HOME:-$HOME/Data/lobsteragents}"
 CONFIG_PATH="${OPENCLAW_CONFIG:-$OPENCLAW_HOME/openclaw.json}"
 WORKSPACE_SKILLS_DIR="${OPENCLAW_WORKSPACE_SKILLS_DIR:-$OPENCLAW_HOME/workspace/skills}"
 MANIFEST="$ROOT/manifests/agents.json"
 
 usage() {
   printf '%s\n' \
-    'lobsterclaw - LobsterAgents installer for OpenClaw' \
+    'lobsteragents - LobsterAgents installer for OpenClaw' \
     '' \
     'Usage:' \
-    '  lobsterclaw install      Install or update the full Lobster Agents company' \
-    '  lobsterclaw doctor       Validate files and OpenClaw config' \
-    '  lobsterclaw list         Print the Lobster Agents roster' \
-    '  lobsterclaw uninstall    Remove Lobster agent config entries, keep data/backups' \
+    '  lobsteragents install           Install or update the LobsterAgents roster' \
+    '  lobsteragents connect [agent]   Connect an existing OpenClaw agent as liaison' \
+    '  lobsteragents disconnect [agent] Remove liaison wiring from an OpenClaw agent' \
+    '  lobsteragents doctor            Validate files and OpenClaw config' \
+    '  lobsteragents list              Print the Lobster Agents roster' \
+    '  lobsteragents uninstall         Remove Lobster agent config entries, keep data/backups' \
     '' \
     'Environment:' \
     '  OPENCLAW_HOME              Default: $HOME/.openclaw' \
-    '  LOBSTERCLAW_DATA_HOME      Default: $HOME/Data/lobsteragents' \
-    '  LOBSTERCLAW_STRATEGIC_MODEL / STANDARD_MODEL / LOCAL_MODEL'
+    '  LOBSTERAGENTS_DATA_HOME    Default: $HOME/Data/lobsteragents' \
+    '  LOBSTERAGENTS_STRATEGIC_MODEL / STANDARD_MODEL / LOCAL_MODEL'
 }
 
 need_file() {
@@ -39,8 +41,8 @@ backup_config() {
   mkdir -p "$OPENCLAW_HOME/backups"
   local stamp
   stamp="$(date +%Y%m%d-%H%M%S)"
-  cp "$CONFIG_PATH" "$OPENCLAW_HOME/backups/openclaw.lobsterclaw.$stamp.json"
-  echo "$OPENCLAW_HOME/backups/openclaw.lobsterclaw.$stamp.json"
+  cp "$CONFIG_PATH" "$OPENCLAW_HOME/backups/openclaw.lobsteragents.$stamp.$$.json"
+  echo "$OPENCLAW_HOME/backups/openclaw.lobsteragents.$stamp.$$.json"
 }
 
 install_files() {
@@ -66,7 +68,7 @@ openclaw_home = Path(os.environ.get('OPENCLAW_HOME', str(Path.home() / '.opencla
 cfg = json.loads(config_path.read_text())
 manifest = json.loads(manifest_path.read_text())
 tiers = manifest['modelTiers']
-for tier, env in [('strategic','LOBSTERCLAW_STRATEGIC_MODEL'),('standard','LOBSTERCLAW_STANDARD_MODEL'),('local','LOBSTERCLAW_LOCAL_MODEL')]:
+for tier, env in [('strategic','LOBSTERAGENTS_STRATEGIC_MODEL'),('standard','LOBSTERAGENTS_STANDARD_MODEL'),('local','LOBSTERAGENTS_LOCAL_MODEL')]:
     if os.environ.get(env): tiers[tier]['primary'] = os.environ[env]
 agents_cfg = cfg.setdefault('agents', {})
 agents_list = agents_cfg.setdefault('list', [])
@@ -77,14 +79,10 @@ for agent in manifest['agents']:
     entry = by_id.get(agent_id, {'id': agent_id})
     entry.update({'id': agent_id, 'name': agent_id, 'workspace': str(data_home / 'workspaces' / agent_id), 'agentDir': str(openclaw_home / 'agents' / agent_id / 'agent'), 'model': {'primary': tier['primary'], 'fallbacks': tier.get('fallbacks', [])}})
     if agent_id not in by_id: agents_list.append(entry); by_id[agent_id] = entry
-main = by_id.get('main')
-if main is None: main = {'id':'main'}; agents_list.insert(0, main)
-allow = main.setdefault('subagents', {}).setdefault('allowAgents', [])
-for agent_id in all_ids:
-    if agent_id not in allow: allow.append(agent_id)
 config_path.write_text(json.dumps(cfg, indent=2) + '\n')
 print(f'Patched {config_path}')
 print(f'Installed {len(all_ids)} Lobster agents into OpenClaw config')
+print('No liaison agent was modified. Run: lobsteragents connect main')
 PY
 }
 
@@ -116,10 +114,10 @@ PY
 
 install_cmd() {
   if [[ ! -f "$CONFIG_PATH" ]]; then echo "ERROR: OpenClaw config not found at $CONFIG_PATH" >&2; exit 1; fi
-  echo 'Installing lobsterclaw full company...'
+  echo 'Installing LobsterAgents roster...'
   local backup; backup="$(backup_config)"; echo "Backed up OpenClaw config: $backup"
   install_files; create_workspaces; patch_config
-  echo; echo 'lobsterclaw install complete.'; echo 'Run: lobsterclaw doctor'
+  echo; echo 'lobsteragents install complete.'; echo 'Run: lobsteragents connect main'; echo 'Run: lobsteragents doctor'
 }
 
 doctor_cmd() {
@@ -142,7 +140,7 @@ if not skill.exists(): errors.append(f'Missing lobster-orchestrator skill: {skil
 configured={a.get('id') for a in cfg.get('agents',{}).get('list',[]) if isinstance(a,dict)}
 missing=[agent_id for agent_id in ids if agent_id not in configured]
 if missing: errors.append('Agents missing from OpenClaw config: '+', '.join(missing))
-print('lobsterclaw doctor')
+print('lobsteragents doctor')
 print(f'- package agents: {len(ids)}')
 print(f'- data home: {data_home}')
 print(f'- config: {config_path}')
@@ -150,7 +148,7 @@ print(f'- orchestrator skill: {skill}')
 if warnings: print('\nWarnings:'); [print(f'- {x}') for x in warnings]
 if errors:
     print('\nErrors:'); [print(f'- {x}') for x in errors]; sys.exit(1)
-print('\nOK: lobsterclaw is installed.')
+print('\nOK: LobsterAgents is installed.')
 PY
 }
 
@@ -164,6 +162,109 @@ for a in json.loads(Path(sys.argv[1]).read_text())['agents']:
 PY
 }
 
+connect_cmd() {
+  need_file "$CONFIG_PATH"; need_file "$MANIFEST"
+  local liaison="${1:-main}"
+  local backup; backup="$(backup_config)"
+  python3 - "$CONFIG_PATH" "$MANIFEST" "$DATA_HOME" "$OPENCLAW_HOME" "$liaison" <<'PY'
+import json, sys
+from pathlib import Path
+config_path = Path(sys.argv[1])
+manifest_path = Path(sys.argv[2])
+data_home = Path(sys.argv[3]).expanduser()
+openclaw_home = Path(sys.argv[4]).expanduser()
+liaison_id = sys.argv[5]
+cfg = json.loads(config_path.read_text())
+manifest = json.loads(manifest_path.read_text())
+lobster_ids = [a["id"] for a in manifest["agents"]]
+agents_cfg = cfg.setdefault("agents", {})
+agents_list = agents_cfg.setdefault("list", [])
+by_id = {a.get("id"): a for a in agents_list if isinstance(a, dict) and a.get("id")}
+liaison = by_id.get(liaison_id)
+if liaison is None:
+    print(f"ERROR: OpenClaw agent not found: {liaison_id}", file=sys.stderr)
+    print("Run `openclaw` setup first or choose an existing agent id.", file=sys.stderr)
+    sys.exit(1)
+allow = liaison.setdefault("subagents", {}).setdefault("allowAgents", [])
+for agent_id in lobster_ids:
+    if agent_id not in allow:
+        allow.append(agent_id)
+workspace = Path(liaison.get("workspace") or (openclaw_home / "workspace" if liaison_id == "main" else data_home / "workspaces" / liaison_id)).expanduser()
+workspace.mkdir(parents=True, exist_ok=True)
+agents_md = workspace / "AGENTS.md"
+start = "<!-- lobsteragents:start -->"
+end = "<!-- lobsteragents:end -->"
+block = f"""{start}
+## LobsterAgents Liaison
+
+You are connected as the liaison between the user and the installed LobsterAgents company.
+When the user asks for @company, LobsterAgents, company work, departments, named Lobster agents, or agent delegation, use the installed LobsterAgents roster and the lobster-orchestrator skill.
+
+Do not replace your normal assistant identity. Treat LobsterAgents as an available company/team you can coordinate when useful.
+
+Installed roster data: {data_home}
+Orchestrator skill: {openclaw_home / "workspace" / "skills" / "lobster-orchestrator" / "SKILL.md"}
+{end}
+"""
+existing = agents_md.read_text() if agents_md.exists() else ""
+if start in existing and end in existing:
+    before = existing.split(start, 1)[0].rstrip()
+    after = existing.split(end, 1)[1].lstrip()
+    new_text = before + "\n\n" + block + ("\n\n" + after if after else "\n")
+else:
+    new_text = existing.rstrip() + ("\n\n" if existing.strip() else "") + block
+agents_md.write_text(new_text)
+config_path.write_text(json.dumps(cfg, indent=2) + "\n")
+print(f"Connected {liaison_id} as LobsterAgents liaison")
+print(f"Updated OpenClaw config: {config_path}")
+print(f"Updated liaison instructions: {agents_md}")
+print(f"Allowed {len(lobster_ids)} LobsterAgents subagents")
+PY
+  echo "Backed up previous config: $backup"
+}
+
+disconnect_cmd() {
+  need_file "$CONFIG_PATH"; need_file "$MANIFEST"
+  local liaison="${1:-main}"
+  local backup; backup="$(backup_config)"
+  python3 - "$CONFIG_PATH" "$MANIFEST" "$DATA_HOME" "$OPENCLAW_HOME" "$liaison" <<'PY'
+import json, sys
+from pathlib import Path
+config_path = Path(sys.argv[1])
+manifest_path = Path(sys.argv[2])
+data_home = Path(sys.argv[3]).expanduser()
+openclaw_home = Path(sys.argv[4]).expanduser()
+liaison_id = sys.argv[5]
+cfg = json.loads(config_path.read_text())
+manifest = json.loads(manifest_path.read_text())
+lobster_ids = {a["id"] for a in manifest["agents"]}
+agents_list = cfg.get("agents", {}).get("list", [])
+by_id = {a.get("id"): a for a in agents_list if isinstance(a, dict) and a.get("id")}
+liaison = by_id.get(liaison_id)
+if liaison is None:
+    print(f"ERROR: OpenClaw agent not found: {liaison_id}", file=sys.stderr)
+    sys.exit(1)
+allow = liaison.get("subagents", {}).get("allowAgents")
+if isinstance(allow, list):
+    liaison["subagents"]["allowAgents"] = [x for x in allow if x not in lobster_ids]
+workspace = Path(liaison.get("workspace") or (openclaw_home / "workspace" if liaison_id == "main" else data_home / "workspaces" / liaison_id)).expanduser()
+agents_md = workspace / "AGENTS.md"
+start = "<!-- lobsteragents:start -->"
+end = "<!-- lobsteragents:end -->"
+if agents_md.exists():
+    existing = agents_md.read_text()
+    if start in existing and end in existing:
+        before = existing.split(start, 1)[0].rstrip()
+        after = existing.split(end, 1)[1].lstrip()
+        agents_md.write_text(before + ("\n\n" + after if after else "\n"))
+config_path.write_text(json.dumps(cfg, indent=2) + "\n")
+print(f"Disconnected {liaison_id} from LobsterAgents liaison wiring")
+print(f"Updated OpenClaw config: {config_path}")
+if agents_md.exists(): print(f"Updated liaison instructions: {agents_md}")
+PY
+  echo "Backed up previous config: $backup"
+}
+
 uninstall_cmd() {
   need_file "$CONFIG_PATH"; need_file "$MANIFEST"
   local backup; backup="$(backup_config)"
@@ -174,7 +275,7 @@ config_path=Path(sys.argv[1]); manifest=json.loads(Path(sys.argv[2]).read_text()
 cfg=json.loads(config_path.read_text()); agents_cfg=cfg.get('agents', {})
 agents_cfg['list']=[a for a in agents_cfg.get('list', []) if not (isinstance(a,dict) and a.get('id') in ids)]
 for a in agents_cfg.get('list', []):
-    if isinstance(a,dict) and a.get('id')=='main':
+    if isinstance(a,dict):
         allow=a.get('subagents',{}).get('allowAgents')
         if isinstance(allow,list): a['subagents']['allowAgents']=[x for x in allow if x not in ids]
 config_path.write_text(json.dumps(cfg, indent=2)+'\n')
@@ -186,6 +287,8 @@ PY
 cmd="${1:-}"
 case "$cmd" in
   install) install_cmd ;;
+  connect) connect_cmd "${2:-main}" ;;
+  disconnect) disconnect_cmd "${2:-main}" ;;
   doctor) doctor_cmd ;;
   list) list_cmd ;;
   uninstall) uninstall_cmd ;;

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-INSTALL_DIR="${LOBSTERCLAW_HOME:-$HOME/.lobsterclaw}"
-BIN_DIR="${LOBSTERCLAW_BIN_DIR:-$HOME/.local/bin}"
+INSTALL_DIR="${LOBSTERAGENTS_HOME:-$HOME/.lobsteragents}"
+BIN_DIR="${LOBSTERAGENTS_BIN_DIR:-$HOME/.local/bin}"
 OPENCLAW_HOME="${OPENCLAW_HOME:-$HOME/.openclaw}"
 OPENCLAW_CONFIG="${OPENCLAW_CONFIG:-$OPENCLAW_HOME/openclaw.json}"
 
@@ -61,11 +61,11 @@ require_openclaw_ready
 
 mkdir -p "$INSTALL_DIR" "$BIN_DIR"
 rsync -a --delete --exclude='.git' --exclude='.DS_Store' "$SOURCE_DIR/" "$INSTALL_DIR/"
-chmod +x "$INSTALL_DIR/bin/lobsterclaw"
-ln -sf "$INSTALL_DIR/bin/lobsterclaw" "$BIN_DIR/lobsterclaw"
-echo "Installed lobsterclaw CLI: $BIN_DIR/lobsterclaw"
+chmod +x "$INSTALL_DIR/bin/lobsteragents"
+ln -sf "$INSTALL_DIR/bin/lobsteragents" "$BIN_DIR/lobsteragents"
+echo "Installed LobsterAgents CLI: $BIN_DIR/lobsteragents"
 echo
-"$BIN_DIR/lobsterclaw" install
+"$BIN_DIR/lobsteragents" install
 echo
 echo "If $BIN_DIR is not on PATH, add this to your shell profile:"
 echo "  export PATH=\"$BIN_DIR:\$PATH\""

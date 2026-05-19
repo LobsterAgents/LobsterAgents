@@ -1,5 +1,5 @@
 {
-  "schema": "lobsterclaw.agents.v1",
+  "schema": "lobsteragents.agents.v1",
   "company": "Lobster Agents LLC",
   "defaultFrontDoor": "bob-hawthorne",
   "companyMention": "@company",
@@ -253,4 +253,3 @@
     }
   }
 }
-

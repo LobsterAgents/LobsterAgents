@@ -10,7 +10,7 @@ It is designed for OpenClaw-style agent orchestration, but the method is portabl
 
 - A full multi-department agent roster
 - Individual agent profiles with role, model, tools, responsibilities, and system prompt
-- The packaged `lobsterclaw` installer for OpenClaw
+- The packaged `lobsteragents` installer for OpenClaw
 - A reusable agent profile template
 - Project lifecycle and approval gates
 - Orchestration guidance for routing work across agents
@@ -47,13 +47,16 @@ scripts/      Validation and maintenance scripts
 To install from a release tarball:
 
 ~~~bash
-tar -xzf lobsterclaw-0.1.6.tgz
+tar -xzf LobsterAgents-0.1.7.tgz
 cd package
 ./install.sh
-~/.local/bin/lobsterclaw doctor
+~/.local/bin/lobsteragents connect main
+~/.local/bin/lobsteragents doctor
 ~~~
 
-Install and set up OpenClaw before running `lobsterclaw`. If OpenClaw is missing, or setup has not created `~/.openclaw/openclaw.json` yet, `install.sh` exits with the official OpenClaw install/setup command instead of trying to bootstrap OpenClaw itself.
+Install and set up OpenClaw before running `lobsteragents`. If OpenClaw is missing, or setup has not created `~/.openclaw/openclaw.json` yet, `install.sh` exits with the official OpenClaw install/setup command instead of trying to bootstrap OpenClaw itself.
+
+`./install.sh` installs the LobsterAgents roster without modifying your existing main agent. To make an existing OpenClaw agent the company liaison, run `lobsteragents connect <agent-id>`; `main` is the common default.
 
 To use the repository manually:
 

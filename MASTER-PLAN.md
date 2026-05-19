@@ -23,9 +23,11 @@ The installer creates runtime files under user-owned local directories:
 Install the package tarball with npm, then run the installer:
 
 ~~~bash
-npm install -g ./lobsterclaw-0.1.2.tgz
-lobsterclaw install
-lobsterclaw doctor
+tar -xzf LobsterAgents-0.1.7.tgz
+cd package
+./install.sh
+lobsteragents connect main
+lobsteragents doctor
 ~~~
 
 The installer backs up the OpenClaw config before patching agent entries.

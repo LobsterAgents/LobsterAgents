@@ -1,6 +1,6 @@
 ---
 name: lobster-orchestrator
-description: Orchestrate Lobster Agents LLC multi-agent workflows. Use when the user talks to Bob, mentions @company, delegates to named Lobster agents, coordinates work across departments, or manages project workflows. Loads agent profiles from ~/Data/lobsteragents/agents/ unless LOBSTERCLAW_DATA_HOME points elsewhere.
+description: Orchestrate Lobster Agents LLC multi-agent workflows. Use when the user talks to a connected liaison agent, mentions @company, delegates to named Lobster agents, coordinates work across departments, or manages project workflows. Loads agent profiles from ~/Data/lobsteragents/agents/ unless LOBSTERAGENTS_DATA_HOME points elsewhere.
 ---
 
 # Lobster Agents Orchestrator
@@ -36,7 +36,7 @@ Before spawning, read the agent's profile:
 read ~/Data/lobsteragents/agents/[agent-name].md
 ```
 
-If LOBSTERCLAW_DATA_HOME is set, use $LOBSTERCLAW_DATA_HOME/agents/[agent-name].md instead.
+If LOBSTERAGENTS_DATA_HOME is set, use $LOBSTERAGENTS_DATA_HOME/agents/[agent-name].md instead.
 
 ### Extract System Prompt
 
