@@ -47,7 +47,7 @@ scripts/      Validation and maintenance scripts
 To install from a release tarball:
 
 ~~~bash
-tar -xzf LobsterAgents-0.1.9.tgz
+tar -xzf LobsterAgents-0.1.10.tgz
 cd package
 ./install.sh
 ~/.local/bin/lobsteragents connect main
@@ -62,10 +62,10 @@ To set models for all installed LobsterAgents after install:
 
 ~~~bash
 ~/.local/bin/lobsteragents models list
-~/.local/bin/lobsteragents models openai/gpt-5.5 vllm/qwen3.6-fp8 vllm/qwen3.6-fp8
+~/.local/bin/lobsteragents models openai/gpt-5.5-pro openai/gpt-5.5 vllm/qwen3.6-fp8
 ~~~
 
-The interactive model prompt reads available model ids from `~/.openclaw/openclaw.json`, including `models.providers` and existing agent model settings.
+The interactive model prompt reads available model ids from `~/.openclaw/openclaw.json`, including `models.providers` and existing agent model settings. It asks for three tiers: high-reasoning/strategic, middle-thinking/standard, and local/simple execution.
 
 To use the repository manually:
 

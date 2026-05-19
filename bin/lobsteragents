@@ -22,7 +22,7 @@ usage() {
     'Usage:' \
     '  lobsteragents install           Install or update the LobsterAgents roster' \
     '  lobsteragents models list       Show models found in OpenClaw config' \
-    '  lobsteragents models [models]   Set models for installed LobsterAgents' \
+    '  lobsteragents models [high] [middle] [local]   Set model tiers' \
     '  lobsteragents connect [agent]   Connect an existing OpenClaw agent as liaison' \
     '  lobsteragents disconnect [agent] Remove liaison wiring from an OpenClaw agent' \
     '  lobsteragents doctor            Validate files and OpenClaw config' \
@@ -37,7 +37,7 @@ usage() {
     'Examples:' \
     '  lobsteragents connect main' \
     '  lobsteragents connect bob' \
-    '  lobsteragents models openai/gpt-5.5 vllm/qwen3.6-fp8 vllm/qwen3.6-fp8'
+    '  lobsteragents models openai/gpt-5.5-pro openai/gpt-5.5 vllm/qwen3.6-fp8'
 }
 
 need_file() {
@@ -259,12 +259,33 @@ def resolve(value):
     return value
 
 def preferred_index(kind):
-    for idx, (model, _) in enumerate(available, 1):
+    def score(model):
         lower = model.lower()
-        if kind == "strategic" and ("gpt" in lower or "claude" in lower or "opus" in lower):
-            return idx
-        if kind in ("standard", "local") and ("vllm" in lower or "ollama" in lower or "qwen" in lower):
-            return idx
+        if "pro" in lower or "opus" in lower or "sonnet" in lower or "reason" in lower:
+            return 3
+        if "gpt" in lower or "claude" in lower:
+            return 2
+        if "vllm" in lower or "ollama" in lower or "qwen" in lower or "local" in lower:
+            return 1
+        return 0
+
+    ranked = list(enumerate(available, 1))
+    if kind == "strategic":
+        ranked.sort(key=lambda item: score(item[1][0]), reverse=True)
+        return ranked[0][0] if ranked else None
+    if kind == "standard":
+        for idx, (model, _) in ranked:
+            lower = model.lower()
+            if ("gpt" in lower or "claude" in lower) and "pro" not in lower and "opus" not in lower:
+                return idx
+        for idx, (model, _) in ranked:
+            if score(model) >= 2:
+                return idx
+    if kind == "local":
+        for idx, (model, _) in ranked:
+            lower = model.lower()
+            if "vllm" in lower or "ollama" in lower or "qwen" in lower or "local" in lower:
+                return idx
     return 1 if available else None
 
 def pick(kind, supplied):
@@ -272,17 +293,23 @@ def pick(kind, supplied):
     if resolved:
         return resolved
     if not sys.stdin.isatty() or not sys.stdout.isatty():
-        print("Usage: lobsteragents models <strategic-model> <standard-model> [local-model]", file=sys.stderr)
+        print("Usage: lobsteragents models <high-model> <middle-model> [local-model]", file=sys.stderr)
         print("Run `lobsteragents models list` to show configured OpenClaw models.", file=sys.stderr)
         sys.exit(2)
     if not available:
         return input(f"{kind.title()} model: ").strip()
-    print(f"\nChoose {kind} model:")
+    labels = {
+        "strategic": "high-reasoning / strategic",
+        "standard": "middle-thinking / standard",
+        "local": "local / simple execution",
+    }
+    label = labels.get(kind, kind)
+    print(f"\nChoose {label} model:")
     for idx, (model, source) in enumerate(available, 1):
         print(f"  {idx}) {model} [{source}]")
     default_idx = preferred_index(kind)
     default_text = f" [{default_idx}]" if default_idx else ""
-    choice = input(f"{kind.title()} model number or id{default_text}: ").strip()
+    choice = input(f"{label.title()} model number or id{default_text}: ").strip()
     if not choice and default_idx:
         return available[default_idx - 1][0]
     return resolve(choice)

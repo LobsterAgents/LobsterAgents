@@ -23,10 +23,10 @@ The installer creates runtime files under user-owned local directories:
 Install the package tarball with npm, then run the installer:
 
 ~~~bash
-tar -xzf LobsterAgents-0.1.9.tgz
+tar -xzf LobsterAgents-0.1.10.tgz
 cd package
 ./install.sh
-lobsteragents models openai/gpt-5.5 vllm/qwen3.6-fp8 vllm/qwen3.6-fp8
+lobsteragents models openai/gpt-5.5-pro openai/gpt-5.5 vllm/qwen3.6-fp8
 lobsteragents connect main
 lobsteragents doctor
 ~~~

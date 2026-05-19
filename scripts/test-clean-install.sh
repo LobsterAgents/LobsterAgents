@@ -61,7 +61,7 @@ grep -q "vllm/qwen3.6-fp8" "$TMP/models-list.txt"
 
 HOME="$TMP/home" \
   LOBSTERAGENTS_DATA_HOME="$TMP/data/lobsteragents" \
-  "$TMP/bin/lobsteragents" models 1 2 2
+  "$TMP/bin/lobsteragents" models 3 1 2
 
 HOME="$TMP/home" \
   LOBSTERAGENTS_DATA_HOME="$TMP/data/lobsteragents" \
@@ -81,10 +81,12 @@ ids = {a.get("id") for a in agents if isinstance(a, dict)}
 main = next((a for a in agents if isinstance(a, dict) and a.get("id") == "main"), {})
 allow = main.get("subagents", {}).get("allowAgents", [])
 bob = next((a for a in agents if isinstance(a, dict) and a.get("id") == "bob-hawthorne"), {})
+larry = next((a for a in agents if isinstance(a, dict) and a.get("id") == "larry-claw"), {})
 
 assert "bob-hawthorne" in ids, "bob-hawthorne missing from OpenClaw config"
 assert len(allow) == 28, f"expected 28 allowed Lobster agents after connect, got {len(allow)}"
-assert bob.get("model", {}).get("primary") == "vllm/qwen3.6-fp8", "standard model was not applied"
+assert larry.get("model", {}).get("primary") == "openai/gpt-5.5-pro", "high/strategic model was not applied"
+assert bob.get("model", {}).get("primary") == "openai/gpt-5.5", "middle/standard model was not applied"
 
 print(f"Clean install test OK: {len(ids)} configured agents, {len(allow)} allowed subagents")
 PY
