@@ -1,8 +1,8 @@
-# LobsterClaw
+# LobsterAgents
 
-LobsterClaw is the installer and management CLI for adding the Lobster Agents company template to an existing OpenClaw setup.
+LobsterAgents is the installer and company template for adding a coordinated team of specialized AI agents to an existing OpenClaw setup.
 
-The included Lobster Agents template is an open-source model for running a small AI software company as a coordinated team of specialized agents.
+The included template is an open-source model for running a small AI software company as a coordinated team of specialized agents.
 
 It is designed for OpenClaw-style agent orchestration, but the method is portable: define clear roles, permissions, reporting lines, handoff rules, and project gates so agents behave less like a pile of prompts and more like a working organization.
 
