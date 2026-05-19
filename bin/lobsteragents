@@ -21,6 +21,7 @@ usage() {
     '' \
     'Usage:' \
     '  lobsteragents install           Install or update the LobsterAgents roster' \
+    '  lobsteragents models [models]   Set models for installed LobsterAgents' \
     '  lobsteragents connect [agent]   Connect an existing OpenClaw agent as liaison' \
     '  lobsteragents disconnect [agent] Remove liaison wiring from an OpenClaw agent' \
     '  lobsteragents doctor            Validate files and OpenClaw config' \
@@ -30,7 +31,12 @@ usage() {
     'Environment:' \
     '  OPENCLAW_HOME              Default: $HOME/.openclaw' \
     '  LOBSTERAGENTS_DATA_HOME    Default: $HOME/Data/lobsteragents' \
-    '  LOBSTERAGENTS_STRATEGIC_MODEL / STANDARD_MODEL / LOCAL_MODEL'
+    '  LOBSTERAGENTS_STRATEGIC_MODEL / STANDARD_MODEL / LOCAL_MODEL' \
+    '' \
+    'Examples:' \
+    '  lobsteragents connect main' \
+    '  lobsteragents connect bob' \
+    '  lobsteragents models openai/gpt-5.5 vllm/qwen3.6-fp8 vllm/qwen3.6-fp8'
 }
 
 need_file() {
@@ -162,6 +168,64 @@ for a in json.loads(Path(sys.argv[1]).read_text())['agents']:
 PY
 }
 
+models_cmd() {
+  need_file "$CONFIG_PATH"; need_file "$MANIFEST"
+  local strategic="${1:-}"
+  local standard="${2:-}"
+  local local_model="${3:-}"
+
+  if [[ -z "$strategic" || -z "$standard" ]]; then
+    if [[ -t 0 && -t 1 ]]; then
+      echo "Configure LobsterAgents models. Leave blank to keep the current value for that tier."
+      if [[ -z "$strategic" ]]; then
+        read -r -p "Strategic model: " strategic
+      fi
+      if [[ -z "$standard" ]]; then
+        read -r -p "Standard model: " standard
+      fi
+      read -r -p "Local model [same as standard]: " local_model
+    else
+      echo "Usage: lobsteragents models <strategic-model> <standard-model> [local-model]" >&2
+      exit 2
+    fi
+  fi
+
+  [[ -n "$local_model" ]] || local_model="$standard"
+
+  local backup; backup="$(backup_config)"
+  python3 - "$CONFIG_PATH" "$MANIFEST" "$strategic" "$standard" "$local_model" <<'PY'
+import json, sys
+from pathlib import Path
+config_path = Path(sys.argv[1])
+manifest_path = Path(sys.argv[2])
+models = {"strategic": sys.argv[3], "standard": sys.argv[4], "local": sys.argv[5]}
+cfg = json.loads(config_path.read_text())
+manifest = json.loads(manifest_path.read_text())
+agents = cfg.get("agents", {}).get("list", [])
+by_id = {a.get("id"): a for a in agents if isinstance(a, dict) and a.get("id")}
+updated = []
+for agent in manifest["agents"]:
+    agent_id = agent["id"]
+    entry = by_id.get(agent_id)
+    if not entry:
+        continue
+    tier_name = agent.get("modelTier", "standard")
+    model = models.get(tier_name) or models["standard"]
+    if not model:
+        continue
+    model_cfg = entry.setdefault("model", {})
+    model_cfg["primary"] = model
+    updated.append((agent_id, tier_name, model))
+config_path.write_text(json.dumps(cfg, indent=2) + "\n")
+print(f"Updated models for {len(updated)} LobsterAgents")
+for tier_name in ("strategic", "standard", "local"):
+    count = sum(1 for _, t, _ in updated if t == tier_name)
+    if count:
+        print(f"- {tier_name}: {models[tier_name]} ({count} agents)")
+PY
+  echo "Backed up previous config: $backup"
+}
+
 connect_cmd() {
   need_file "$CONFIG_PATH"; need_file "$MANIFEST"
   local liaison="${1:-main}"
@@ -287,6 +351,7 @@ PY
 cmd="${1:-}"
 case "$cmd" in
   install) install_cmd ;;
+  models) models_cmd "${2:-}" "${3:-}" "${4:-}" ;;
   connect) connect_cmd "${2:-main}" ;;
   disconnect) disconnect_cmd "${2:-main}" ;;
   doctor) doctor_cmd ;;

@@ -30,6 +30,58 @@ is_usable_command() {
   "$name" --version >/dev/null 2>&1
 }
 
+is_interactive_install() {
+  [[ "${LOBSTERAGENTS_NO_PROMPT:-0}" != "1" && "${CI:-}" == "" && -t 0 && -t 1 ]]
+}
+
+prompt_liaison() {
+  is_interactive_install || return 0
+
+  echo
+  echo "Connect a liaison agent for LobsterAgents?"
+  echo "  1) main (recommended)"
+  echo "  2) bob"
+  echo "  3) custom agent id"
+  echo "  4) skip"
+  read -r -p "Choose [1]: " choice || return
+
+  local liaison
+  case "${choice:-1}" in
+    1) liaison="main" ;;
+    2) liaison="bob" ;;
+    3) read -r -p "Agent id: " liaison || return ;;
+    4|s|S|skip) return ;;
+    *) liaison="main" ;;
+  esac
+
+  if [[ -n "$liaison" ]]; then
+    "$BIN_DIR/lobsteragents" connect "$liaison"
+  fi
+}
+
+prompt_models() {
+  is_interactive_install || return 0
+
+  echo
+  read -r -p "Set LobsterAgents models now? [y/N]: " answer || return
+  case "$answer" in
+    y|Y|yes|YES) ;;
+    *) return ;;
+  esac
+
+  echo "Example for your test machine:"
+  echo "  strategic: openai/gpt-5.5"
+  echo "  standard/local: vllm/qwen3.6-fp8"
+  read -r -p "Strategic model [openai/gpt-5.5]: " strategic || return
+  read -r -p "Standard model [vllm/qwen3.6-fp8]: " standard || return
+  read -r -p "Local model [same as standard]: " local_model || return
+
+  strategic="${strategic:-openai/gpt-5.5}"
+  standard="${standard:-vllm/qwen3.6-fp8}"
+  local_model="${local_model:-$standard}"
+  "$BIN_DIR/lobsteragents" models "$strategic" "$standard" "$local_model"
+}
+
 require_openclaw_ready() {
   if is_usable_command openclaw; then
     if [[ -f "$OPENCLAW_CONFIG" ]]; then
@@ -66,6 +118,8 @@ ln -sf "$INSTALL_DIR/bin/lobsteragents" "$BIN_DIR/lobsteragents"
 echo "Installed LobsterAgents CLI: $BIN_DIR/lobsteragents"
 echo
 "$BIN_DIR/lobsteragents" install
+prompt_models
+prompt_liaison
 echo
 echo "If $BIN_DIR is not on PATH, add this to your shell profile:"
 echo "  export PATH=\"$BIN_DIR:\$PATH\""

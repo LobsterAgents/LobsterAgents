@@ -19,10 +19,15 @@ chmod +x "$TMP/bin/openclaw"
   cd "$ROOT"
   HOME="$TMP/home" \
     PATH="$TMP/bin:$PATH" \
+    LOBSTERAGENTS_NO_PROMPT=1 \
     LOBSTERAGENTS_BIN_DIR="$TMP/bin" \
     LOBSTERAGENTS_DATA_HOME="$TMP/data/lobsteragents" \
     ./install.sh
 )
+
+HOME="$TMP/home" \
+  LOBSTERAGENTS_DATA_HOME="$TMP/data/lobsteragents" \
+  "$TMP/bin/lobsteragents" models openai/gpt-5.5 vllm/qwen3.6-fp8 vllm/qwen3.6-fp8
 
 HOME="$TMP/home" \
   LOBSTERAGENTS_DATA_HOME="$TMP/data/lobsteragents" \
@@ -41,9 +46,25 @@ agents = cfg.get("agents", {}).get("list", [])
 ids = {a.get("id") for a in agents if isinstance(a, dict)}
 main = next((a for a in agents if isinstance(a, dict) and a.get("id") == "main"), {})
 allow = main.get("subagents", {}).get("allowAgents", [])
+bob = next((a for a in agents if isinstance(a, dict) and a.get("id") == "bob-hawthorne"), {})
 
 assert "bob-hawthorne" in ids, "bob-hawthorne missing from OpenClaw config"
 assert len(allow) == 28, f"expected 28 allowed Lobster agents after connect, got {len(allow)}"
+assert bob.get("model", {}).get("primary") == "vllm/qwen3.6-fp8", "standard model was not applied"
 
 print(f"Clean install test OK: {len(ids)} configured agents, {len(allow)} allowed subagents")
+PY
+
+HOME="$TMP/home" \
+  LOBSTERAGENTS_DATA_HOME="$TMP/data/lobsteragents" \
+  "$TMP/bin/lobsteragents" disconnect main
+
+python3 - "$TMP/home/.openclaw/openclaw.json" <<'PY'
+import json, sys
+from pathlib import Path
+cfg = json.loads(Path(sys.argv[1]).read_text())
+main = next((a for a in cfg.get("agents", {}).get("list", []) if isinstance(a, dict) and a.get("id") == "main"), {})
+allow = main.get("subagents", {}).get("allowAgents", [])
+assert not allow, f"expected disconnect to clear LobsterAgents liaison allow list, got {len(allow)}"
+print("Disconnect test OK")
 PY
